@@ -20,16 +20,57 @@ namespace HospitalAppointment.Services.Concretes
             {
                 throw new ArgumentException("Appointmenti minimum 3 gün öncesinde alabilirsiniz!");
             }
-            
+
+
+            if (!IsValidDoctor(appointment.DoctorId))
+            {
+                throw new ArgumentException("Geçerli bir doktor olmalı.");
+            }
+
+            // Doktorun randevu sayıvalidasyonu
+            if (HasReachedMaxAppointments(appointment.DoctorId))
+            {
+                throw new InvalidOperationException("Bir Doktor en fazla 10 randevu alabilir!");
+            }
+
             Appointment addAppointment = _appointmentRepository.Add(appointment);
             return addAppointment;
         }
 
-        // APPOİNTMENT VALİDASYONU KONTROL EDEN KOD
+        // APPOİNTMENT VALİDASYONU KONTROL EDEN KOD LAR AŞAĞIDA
         private bool IsValidAppointmentDate(DateTime appointmentDate)
         {
             DateTime minimumDate = DateTime.Today.AddDays(3);
             return appointmentDate.Date >= minimumDate;
+        }
+
+        private bool IsValidDoctor(int doctorId)
+        {
+            return doctorId > 0; // DOKTOR KONTROLÜ  NASIL YAPILIR AKLIMA GELMEDİ
+        }
+        // Doktorun randevu sayısını kontrol eden fonksiyon
+        private bool HasReachedMaxAppointments(int doctorId)
+        {
+            var doctorAppointments = _appointmentRepository.GetAll()
+                .Where(a => a.DoctorId == doctorId)
+                .Count();
+
+            return doctorAppointments >= 10;
+        }
+
+        public void DeleteExpiredAppointments()
+        {
+            // Geçmiş tarihli randevuları alıyoruz KESİNLİKLE GPT DEN ÇALMADIM
+            var expiredAppointments = _appointmentRepository
+                .GetAll()
+                .Where(a => a.AppointmentDate < DateTime.Now)
+                .ToList();
+
+            // Geçmiş randevuları veritabanından siliyoruz
+            foreach (var appointment in expiredAppointments)
+            {
+                _appointmentRepository.Delete(appointment.Id);
+            }
         }
 
         public Appointment Delete(int id)
@@ -37,6 +78,9 @@ namespace HospitalAppointment.Services.Concretes
             Appointment appointment = _appointmentRepository.Delete(id);
             return appointment;
         }
+
+       
+
 
         public List<Appointment> GetAllAppointments()
         {

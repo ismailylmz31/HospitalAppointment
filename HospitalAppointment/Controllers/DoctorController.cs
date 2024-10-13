@@ -1,4 +1,5 @@
 ﻿using HospitalAppointment.Models;
+using HospitalAppointment.Models.DTO;
 using HospitalAppointment.Services.Abstracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,11 +32,18 @@ public class DoctorController : ControllerBase
 
 
     [HttpPost("add")]
-    public IActionResult Add(Doctor doctor)
+    public IActionResult Add(DoctorDto doctorDto)
     {
+        var doctor = new Doctor
+        {
+            Name = doctorDto.Name,
+            Patients = new List<Appointment>(), 
+        };
+
         var result = _doctorService.Add(doctor);
         return Ok(result);
     }
+
 
 
     [HttpDelete("delete")]

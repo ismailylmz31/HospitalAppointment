@@ -13,5 +13,7 @@ public sealed class Doctor : Entity
         Pediatrics,
         General
     }
-    public List<Appointment> Patients { get; set; }
+    // Nullable ICollection ile randevu listesi
+    public ICollection<Appointment>? Patients { get; set; } = new List<Appointment>();
+
 }
