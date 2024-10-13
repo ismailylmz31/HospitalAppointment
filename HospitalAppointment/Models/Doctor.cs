@@ -1,19 +1,29 @@
-﻿namespace HospitalAppointment.Models;
+﻿using System.Text.Json.Serialization;
 
+namespace HospitalAppointment.Models;
+
+public enum Branch
+{
+    Cardiology,
+    Neurology,
+    Orthopedics,
+    Pediatrics,
+    General
+}
 public sealed class Doctor : Entity
 {
     public int Id { get; set; }
     public string Name { get; set; }
 
-    public enum Branch
-    {
-        Cardiology,
-        Neurology,
-        Orthopedics,
-        Pediatrics,
-        General
-    }
+    
+    public Branch Branch { get; set; }
+
     // Nullable ICollection ile randevu listesi
-    public ICollection<Appointment>? Patients { get; set; } = new List<Appointment>();
+    [JsonIgnore]
+    public List<Appointment> Patients { get; set; }
+    public Doctor()
+    {
+        Patients = new List<Appointment>();
+    }
 
 }

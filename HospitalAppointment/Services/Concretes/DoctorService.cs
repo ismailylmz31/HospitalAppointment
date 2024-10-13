@@ -1,4 +1,5 @@
 ﻿using HospitalAppointment.Models;
+using HospitalAppointment.Models.DTO;
 using HospitalAppointment.Repository.Abstracts;
 using HospitalAppointment.Services.Abstracts;
 
@@ -13,10 +14,18 @@ namespace HospitalAppointment.Services.Concretes
             _doctorRepository = doctorRepository;
         }       
 
-        public Doctor Add(Doctor doctor)
+        public Doctor Add(DoctorDto doctorDto)
         {
-            Doctor AddDoctor = _doctorRepository.Add(doctor);
-            return AddDoctor;
+            var doctor = new Doctor
+            {
+                Name = doctorDto.Name,
+                Branch = doctorDto.Branch,
+                Patients = new List<Appointment>()
+            };
+
+            // Doktoru ekleme
+            Doctor addedDoctor = _doctorRepository.Add(doctor);
+            return addedDoctor;
         }
 
         public Doctor Delete(int id)

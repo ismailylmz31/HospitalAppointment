@@ -1,4 +1,6 @@
 ﻿using HospitalAppointment.Models;
+using HospitalAppointment.Models.DTO;
+using HospitalAppointment.Models.DTO.Response;
 using HospitalAppointment.Services.Abstracts;
 using HospitalAppointment.Services.Concretes;
 using Microsoft.AspNetCore.Mvc;
@@ -19,23 +21,31 @@ public class AppointmentsController : ControllerBase
     [HttpGet("getall")]
     public IActionResult GetAll()
     {
-        var result = _appointmentsService.GetAllAppointments();
-        return Ok(result);
+        var appointments = _appointmentsService.GetAllAppointments();
+        var appointmentDtos = appointments.Select(a => (AppointmentResponseDto)a).ToList();
+        return Ok(appointmentDtos);
     }
 
-    [HttpGet("getbyıd")]
+    [HttpGet("getbyid")]
     public IActionResult GetById(int id)
     {
-        var result = _appointmentsService.GetById(id);
-        return Ok(result);
+        var appointment = _appointmentsService.GetById(id);
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+
+        var appointmentDto = (AppointmentResponseDto)appointment;
+        return Ok(appointmentDto);
     }
 
 
     [HttpPost("add")]
-    public IActionResult Add(Appointment appointment)
+    public IActionResult Add(AppointmentDto appointmentDto)
     {
-        var result = _appointmentsService.Add(appointment);
-        return Ok(result);
+        var result = _appointmentsService.Add(appointmentDto);
+        var appointmentResponseDto = (AppointmentResponseDto)result;
+        return Ok(appointmentResponseDto);
     }
 
 

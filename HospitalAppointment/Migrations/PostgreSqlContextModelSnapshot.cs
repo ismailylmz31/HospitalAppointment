@@ -55,6 +55,9 @@ namespace HospitalAppointment.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Branch")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -66,11 +69,13 @@ namespace HospitalAppointment.Migrations
 
             modelBuilder.Entity("HospitalAppointment.Models.Appointment", b =>
                 {
-                    b.HasOne("HospitalAppointment.Models.Doctor", null)
+                    b.HasOne("HospitalAppointment.Models.Doctor", "Doctor")
                         .WithMany("Patients")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("HospitalAppointment.Models.Doctor", b =>

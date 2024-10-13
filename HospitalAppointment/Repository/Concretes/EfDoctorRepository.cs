@@ -1,11 +1,13 @@
 ﻿using HospitalAppointment.Context;
 using HospitalAppointment.Models;
 using HospitalAppointment.Repository.Abstracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalAppointment.Repository.Concretes
 {
     public class EfDoctorRepository : IDoctorRepository
     {
+
         private PostgreSqlContext _context;
 
         public EfDoctorRepository(PostgreSqlContext context)
@@ -30,13 +32,12 @@ namespace HospitalAppointment.Repository.Concretes
 
         public List<Doctor> GetAll()
         {
-            return _context.Doctors.ToList();
+            return _context.Doctors.Include(d => d.Patients).ToList();
         }
 
-        public Doctor? GetById(int id)
+        public Doctor GetById(int id)
         {
-            Doctor? doctor = _context.Doctors.Find(id);
-            return doctor;
+            return _context.Doctors.Include(d => d.Patients).FirstOrDefault(d => d.Id == id);
         }
 
         public Doctor Update(Doctor doctor)

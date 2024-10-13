@@ -1,6 +1,7 @@
 ﻿using HospitalAppointment.Context;
 using HospitalAppointment.Models;
 using HospitalAppointment.Repository.Abstracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalAppointment.Repository.Concretes
 {
@@ -31,13 +32,16 @@ namespace HospitalAppointment.Repository.Concretes
 
         public List<Appointment> GetAll()
         {
-            return _context.Appointments.ToList();
+            return _context.Appointments
+                    .Include(a => a.Doctor)
+                    .ToList();
         }
 
         public Appointment? GetById(int id)
         {
-            Appointment? appointment = _context.Appointments.Find(id);
-            return appointment;
+            return _context.Appointments
+                    .Include(a => a.Doctor)
+                    .FirstOrDefault(a => a.Id == id);
 
         }
 

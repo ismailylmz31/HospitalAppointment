@@ -1,5 +1,6 @@
 ﻿using HospitalAppointment.Models;
 using HospitalAppointment.Models.DTO;
+using HospitalAppointment.Models.DTO.Response;
 using HospitalAppointment.Services.Abstracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +21,22 @@ public class DoctorController : ControllerBase
     [HttpGet("getall")]
     public IActionResult GetAll()
     {
-        var result = _doctorService.GetAllDoctors();
-        return Ok(result);
+        var doctors = _doctorService.GetAllDoctors();
+
+        var doctorDtos = doctors.Select(doctor => (DoctorResponseDto)doctor).ToList();
+        return Ok(doctorDtos);
     }
 
     [HttpGet("getbyıd")]
-    public IActionResult GetById(int id) { 
-        var result = _doctorService.GetById(id);
-        return Ok(result);
+    public IActionResult GetById(int id) {
+        var doctor = _doctorService.GetById(id);
+        if (doctor == null)
+        {
+            return NotFound();
+        }
+
+        DoctorResponseDto doctorDto = doctor; // Implicit conversion
+        return Ok(doctorDto);
     }
 
 
@@ -40,7 +49,7 @@ public class DoctorController : ControllerBase
             Patients = new List<Appointment>(), 
         };
 
-        var result = _doctorService.Add(doctor);
+        var result = _doctorService.Add(doctorDto);
         return Ok(result);
     }
 

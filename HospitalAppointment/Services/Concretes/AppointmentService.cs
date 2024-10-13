@@ -1,4 +1,5 @@
 ﻿using HospitalAppointment.Models;
+using HospitalAppointment.Models.DTO;
 using HospitalAppointment.Repository.Abstracts;
 using HospitalAppointment.Services.Abstracts;
 
@@ -6,32 +7,42 @@ namespace HospitalAppointment.Services.Concretes
 {
     public class AppointmentService : IAppointmentService
     {
-        private IAppointmentRepository _appointmentRepository;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository)
+        private IAppointmentRepository _appointmentRepository;
+        private IDoctorService _doctorService;
+
+        public AppointmentService(IAppointmentRepository appointmentRepository, IDoctorService doctorService)
         {
             _appointmentRepository = appointmentRepository;
+            _doctorService = doctorService;
         }
 
-        public Appointment Add(Appointment appointment)
+        public Appointment Add(AppointmentDto appointmentDto)
         {
             // Tarih validasyonunu yapıyoruz
-            if (!IsValidAppointmentDate(appointment.AppointmentDate))
+            if (!IsValidAppointmentDate(appointmentDto.AppointmentDate))
             {
                 throw new ArgumentException("Appointmenti minimum 3 gün öncesinde alabilirsiniz!");
             }
 
 
-            if (!IsValidDoctor(appointment.DoctorId))
+            if (!IsValidDoctor(appointmentDto.DoctorId))
             {
                 throw new ArgumentException("Geçerli bir doktor olmalı.");
             }
 
             // Doktorun randevu sayıvalidasyonu
-            if (HasReachedMaxAppointments(appointment.DoctorId))
+            if (HasReachedMaxAppointments(appointmentDto.DoctorId))
             {
                 throw new InvalidOperationException("Bir Doktor en fazla 10 randevu alabilir!");
             }
+
+            var appointment = new Appointment
+            {
+                PatientName = appointmentDto.PatientName,
+                AppointmentDate = appointmentDto.AppointmentDate,
+                DoctorId = appointmentDto.DoctorId
+            };
 
             Appointment addAppointment = _appointmentRepository.Add(appointment);
             return addAppointment;
@@ -46,7 +57,8 @@ namespace HospitalAppointment.Services.Concretes
 
         private bool IsValidDoctor(int doctorId)
         {
-            return doctorId > 0; // DOKTOR KONTROLÜ  NASIL YAPILIR AKLIMA GELMEDİ
+            var doctor = _doctorService.GetById(doctorId);
+            return doctor != null; // DOKTOR KONTROLÜ  NASIL YAPILIR AKLIMA GELMEDİ
         }
         // Doktorun randevu sayısını kontrol eden fonksiyon
         private bool HasReachedMaxAppointments(int doctorId)
