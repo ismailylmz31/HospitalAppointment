@@ -1,5 +1,6 @@
 ﻿using HospitalAppointment.Models;
 using HospitalAppointment.Models.DTO;
+using HospitalAppointment.ReturnModel;
 
 namespace HospitalAppointment.Services.Abstracts
 {
@@ -9,7 +10,7 @@ namespace HospitalAppointment.Services.Abstracts
 
         Doctor GetById(int id);
 
-        Doctor Add(DoctorDto doctorDto);
+        ReturnModel<Doctor> Add(DoctorDto doctorDto);
 
         Doctor Update(Doctor doctor);
 

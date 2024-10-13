@@ -1,6 +1,7 @@
 ﻿using HospitalAppointment.Models;
 using HospitalAppointment.Models.DTO;
 using HospitalAppointment.Repository.Abstracts;
+using HospitalAppointment.ReturnModel;
 using HospitalAppointment.Services.Abstracts;
 
 namespace HospitalAppointment.Services.Concretes
@@ -14,8 +15,17 @@ namespace HospitalAppointment.Services.Concretes
             _doctorRepository = doctorRepository;
         }       
 
-        public Doctor Add(DoctorDto doctorDto)
+        public ReturnModel<Doctor> Add(DoctorDto doctorDto)
         {
+            if (doctorDto.Name == null || doctorDto.Name == "")
+            {
+                return new ReturnModel<Doctor>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Doktor isim alanı boş bırakılamaz."
+                };
+            }
             var doctor = new Doctor
             {
                 Name = doctorDto.Name,
@@ -25,7 +35,12 @@ namespace HospitalAppointment.Services.Concretes
 
             // Doktoru ekleme
             Doctor addedDoctor = _doctorRepository.Add(doctor);
-            return addedDoctor;
+            return new ReturnModel<Doctor>
+            {
+                Data = addedDoctor,
+                Success = true,
+                Message = "Doktor Başarı ile eklendi."
+            };
         }
 
         public Doctor Delete(int id)

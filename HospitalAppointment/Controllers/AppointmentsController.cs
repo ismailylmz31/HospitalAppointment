@@ -42,10 +42,18 @@ public class AppointmentsController : ControllerBase
 
     [HttpPost("add")]
     public IActionResult Add(AppointmentDto appointmentDto)
-    {
+    {             
+        
         var result = _appointmentsService.Add(appointmentDto);
-        var appointmentResponseDto = (AppointmentResponseDto)result;
-        return Ok(appointmentResponseDto);
+        if (!result.Success)
+        {
+            return BadRequest(new
+            {
+                StatusCode = 400,
+                message = result.Message
+            });
+        }
+        return Ok(result);
     }
 
 

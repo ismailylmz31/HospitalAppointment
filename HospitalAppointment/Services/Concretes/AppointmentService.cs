@@ -1,6 +1,7 @@
 ﻿using HospitalAppointment.Models;
 using HospitalAppointment.Models.DTO;
 using HospitalAppointment.Repository.Abstracts;
+using HospitalAppointment.ReturnModel;
 using HospitalAppointment.Services.Abstracts;
 
 namespace HospitalAppointment.Services.Concretes
@@ -17,24 +18,49 @@ namespace HospitalAppointment.Services.Concretes
             _doctorService = doctorService;
         }
 
-        public Appointment Add(AppointmentDto appointmentDto)
+        public ReturnModel<Appointment> Add(AppointmentDto appointmentDto)
         {
             // Tarih validasyonunu yapıyoruz
+            
             if (!IsValidAppointmentDate(appointmentDto.AppointmentDate))
             {
-                throw new ArgumentException("Appointmenti minimum 3 gün öncesinde alabilirsiniz!");
+                return new ReturnModel<Appointment>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "En az 3 gün sonrasına randevu alabilirsiniz."
+                };
             }
 
-
+            
             if (!IsValidDoctor(appointmentDto.DoctorId))
             {
-                throw new ArgumentException("Geçerli bir doktor olmalı.");
+                return new ReturnModel<Appointment>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Geçerli bir doktor olmalı."
+                };
             }
-
             // Doktorun randevu sayıvalidasyonu
             if (HasReachedMaxAppointments(appointmentDto.DoctorId))
             {
-                throw new InvalidOperationException("Bir Doktor en fazla 10 randevu alabilir!");
+                return new ReturnModel<Appointment>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Bu doktor için en fazla 10 randevu oluşturulabilir."
+                };
+            }
+
+            if (appointmentDto.PatientName is null || appointmentDto.PatientName == "")
+            {
+                return new ReturnModel<Appointment>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Hasta isim alanı boş bırakılamaz."
+                };
             }
 
             var appointment = new Appointment
@@ -44,8 +70,18 @@ namespace HospitalAppointment.Services.Concretes
                 DoctorId = appointmentDto.DoctorId
             };
 
-            Appointment addAppointment = _appointmentRepository.Add(appointment);
-            return addAppointment;
+            return new ReturnModel<Appointment>
+            {
+
+                Data = _appointmentRepository.Add(appointment),
+                Success = true,
+                Message = "Randevu başarıyla oluşturuldu."
+            };
+
+            
+
+            
+            
         }
 
         // APPOİNTMENT VALİDASYONU KONTROL EDEN KOD LAR AŞAĞIDA
