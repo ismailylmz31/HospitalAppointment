@@ -24,9 +24,11 @@ namespace HospitalAppointment.Migrations
 
             modelBuilder.Entity("HospitalAppointment.Models.Appointment", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("timestamp with time zone");
@@ -64,13 +66,11 @@ namespace HospitalAppointment.Migrations
 
             modelBuilder.Entity("HospitalAppointment.Models.Appointment", b =>
                 {
-                    b.HasOne("HospitalAppointment.Models.Doctor", "Doctor")
+                    b.HasOne("HospitalAppointment.Models.Doctor", null)
                         .WithMany("Patients")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("HospitalAppointment.Models.Doctor", b =>
