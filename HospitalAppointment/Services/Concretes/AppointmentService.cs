@@ -15,8 +15,21 @@ namespace HospitalAppointment.Services.Concretes
 
         public Appointment Add(Appointment appointment)
         {
+            // Tarih validasyonunu yapıyoruz
+            if (!IsValidAppointmentDate(appointment.AppointmentDate))
+            {
+                throw new ArgumentException("Appointmenti minimum 3 gün öncesinde alabilirsiniz!");
+            }
+            
             Appointment addAppointment = _appointmentRepository.Add(appointment);
             return addAppointment;
+        }
+
+        // APPOİNTMENT VALİDASYONU KONTROL EDEN KOD
+        private bool IsValidAppointmentDate(DateTime appointmentDate)
+        {
+            DateTime minimumDate = DateTime.Today.AddDays(3);
+            return appointmentDate.Date >= minimumDate;
         }
 
         public Appointment Delete(int id)
