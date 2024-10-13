@@ -22,6 +22,14 @@ public class DoctorController : ControllerBase
         var result = _doctorService.GetAllDoctors();
         return Ok(result);
     }
+
+    [HttpGet("getbyıd")]
+    public IActionResult GetById(int id) { 
+        var result = _doctorService.GetById(id);
+        return Ok(result);
+    }
+
+
     [HttpPost("add")]
     public IActionResult Add(Doctor doctor)
     {
